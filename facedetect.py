@@ -196,7 +196,7 @@ def handleUserApproval(userinfo, whitelist, savedFilePath):
     	if userinfo != None:
         	if userinfo["name"] in whitelist and userinfo["threshold"] >= setThreshold:
             		print "Door unlocked"
-                        message = '{0} is at the door!'.format(userInfo["name"])
+                        message = '{0} is at the door!'.format(userinfo["name"])
                 else:
             		print "Sending alert to user about unknown user"
                         message = 'There was an unkown face at the door'
