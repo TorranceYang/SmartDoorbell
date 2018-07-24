@@ -1,6 +1,7 @@
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 from datetime import datetime
+from twilio.rest import Client
 import time
 import imutils
 import cv2
@@ -21,6 +22,9 @@ timeBetweenCalls = 5
 lastCallTime = datetime.now()
 setThreshold = 0
 
+account_sid = 'AC93e7bbc2852f37e60a5dadaa85b48f7'
+auth_token = '41949b0e6ef825cc9500f47f16eda0e0'
+
 def main():
 	time.sleep(0.1)
 
@@ -33,7 +37,7 @@ def main():
 		predictionImage = image.copy()
 
 		text = "No Face Detected"
-
+   
 		imutils.resize(image, width=500)
 		gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -46,7 +50,8 @@ def main():
 			if x > 100 and y > 100:
 				userinfo = faceDetected(predictionImage)
                                 whitelist = getWhitelist("test.txt")
-                                isUserApproved(userinfo, whitelist)
+                                savedFilePath = saveImage(predictionImage);
+                                handleUserApproval(userinfo, whitelist, savedFilePath)         
 			else:
 				print 'Face is not close enough!'
 
@@ -70,6 +75,7 @@ def saveImage(img):
 	outfile = '{0}_{1}.jpg'.format(fileLocation, datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
 	cv2.imwrite(outfile, img)
 	print('Image saved')
+        return outfile
 
 def faceDetected(img):
 	global lastCallTime
@@ -181,14 +187,27 @@ def getWhitelist(filename):
         	wlArray.append(info)
     	return wlArray
 
-def isUserApproved(userinfo, whitelist):
+def handleUserApproval(userinfo, whitelist, savedFilePath):
     	global setThreshold
+
+        client = Client(account_sid, auth_token)
+        mesasge = ""
+        
     	if userinfo != None:
         	if userinfo["name"] in whitelist and userinfo["threshold"] >= setThreshold:
             		print "Door unlocked"
-        	else:
-            		print "Send alert to user about unknown user"
-        
+                        message = '{0} is at the door!'.format(userInfo["name"])
+                else:
+            		print "Sending alert to user about unknown user"
+                        message = 'There was an unkown face at the door'
+
+        client.messages \
+              .create(
+                      body = message,
+                      from_ = '+14259797389',
+                      to = '+19106168328',
+                      #THIS URL WILL NEED TO BE CHANGED BASED ON THE NGROK SERVER
+                      media_url = 'http://2a2c9c14.ngrok.io/uploads/{}'.format(savedFilePath))
 
 #TODO
 #Whitelist logic
