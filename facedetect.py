@@ -82,28 +82,84 @@ def faceDetected(img):
 		lastCallTime = currentTime
                 return userinfo
 
+#
 def callEndpoint(img):
-	#addr = 'http://smartdoorbell.azurewebsites.net'
-	#test_url = addr + '/api/HttpTriggerCSharp1?code=PRLRPIVFL5yswaXPv7uO62oVH/rEGmDFPEPJ9lgGymWxPyAu2QUTSg=='
+	#URLs for Custom Vision
 	#test_url = 'https://southcentralus.api.cognitive.microsoft.com/customvision/v2.0/Prediction/50373955-41d0-4ee0-87f2-b9c381552603/image?iterationId=298f99c2-c74b-450d-b775-88de52bf5050'
-	test_url = 'https://southcentralus.api.cognitive.microsoft.com/customvision/v2.0/Prediction/50373955-41d0-4ee0-87f2-b9c381552603/image?'
+	#test_url = 'https://southcentralus.api.cognitive.microsoft.com/customvision/v2.0/Prediction/50373955-41d0-4ee0-87f2-b9c381552603/image?'
 
-	#content_type = 'image/jpeg'
-	content_type = 'application/octet-stream'
-	prediction_key = '5f42222ba70e4b80911f93788355e5e7'	
+	#URL for Face API
+	test_url = 'https://westcentralus.api.cognitive.microsoft.com/face/v1.0/detect'	
+	test_url2 = 'https://westcentralus.api.cognitive.microsoft.com/face/v1.0/identify'	
 	
-	headers = {'content-type': content_type, 'Prediction-Key': prediction_key}
-	#headers = {'content-type': content_type}
+
+	#Used for Custom Vision
+	content_type = 'application/octet-stream'
+	content_type2 = 'application/json'
+	#prediction_key = '5f42222ba70e4b80911f93788355e5e7'	
+
+	#Used for Face API
+	subscription_key = 'ad4f221bdc5d4f9cbda2b41a62c66f1e'	
+	params = {
+		'returnFaceId': 'true',
+		'returnFaceLandmarks': 'false',
+		'returnFaceAttributes': ''
+	}
+
+	#Header for Custom Vision
+	#headers = {'content-type': content_type, 'Prediction-Key': prediction_key}
+	
+	#Header for Face API
+	headers = {'content-type': content_type, 'Ocp-Apim-Subscription-Key': subscription_key}
+	headers2 = {'content-type': content_type2, 'Ocp-Apim-Subscription-Key': subscription_key}
+	headers3 = {'Ocp-Apim-Subscription-Key': subscription_key}
 	
 	img_encoded = cv2.imencode('.jpg', img)[1].tostring()
 
 	#response = requests.post(test_url, data=img_encoded, headers=headers)
-	response = requests.post(test_url, data=img_encoded, headers=headers)
+	response = requests.post(test_url, params=params, headers=headers, data=img_encoded)
 	
-	return parseJson(response.text)
+	#return parseCustomVisionJson(response.text)
+	print 'PRAYING'
+	returnedFaces = parseFaceAPIJson(response.text)
+
+	params2 = '{{"personGroupId": "14ac938c-bb57-40ea-9c68-1665c33da400", "faceIds":["{0}"], "maxNumOfCandidatesReturned": 1, "confidenceThreshold":0.5}}'.format(returnedFaces[0])
+
+	#Identify Faces
+	response2 = requests.post(test_url2, headers=headers2, data=params2)
+	print 'PRAYING HARDER'
+	response2Json = json.loads(response2.text)
+	print response2Json
+	print response2Json[0]['candidates']
+	print response2Json[0]['candidates'][0]['personId']
+
+	personId = response2Json[0]['candidates'][0]['personId']
+
+	test_url3 = 'https://westcentralus.api.cognitive.microsoft.com/face/v1.0/persongroups/14ac938c-bb57-40ea-9c68-1665c33da400/persons/{0}'.format(personId)	
+	response3 = requests.get(test_url3, headers=headers2)
+	response3Json = json.loads(response3.text)
+
+	print response3Json['name']
+
+	return parseFaceAPIJson(response.text)
 
 
-def parseJson(json_):
+def parseFaceAPIJson(json_):
+	parsed = json.loads(json_)
+
+	returnedFaces = []
+
+	print '---------------------------------------------------'
+	for person in parsed:
+		personResult = person['faceId']
+		returnedFaces.append(personResult)
+		print personResult
+		print '---------------------------------------------------'
+	print '\n'
+
+	return returnedFaces
+
+def parseCustomVisionJson(json_):
 	parsed = json.loads(json_)
 	predictions = parsed['predictions']
 	print '---------------------------------------------------'
