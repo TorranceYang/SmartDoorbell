@@ -1,0 +1,16 @@
+{
+    "SannieLoi": {
+        "Time": {
+            "Monday": [
+                [2, 5],
+                [4, 7]
+            ],
+            "Tuesday": [
+                [3, 7],
+                [18, 19]
+            ]
+        },
+        "Expiry": "10",
+        "TimeRegistered": 1532468360
+    }
+}
