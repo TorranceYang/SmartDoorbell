@@ -3,10 +3,12 @@ import time
 import datetime
 
 class Whitelist:
+    filename = "whitelist.json"
 
     @classmethod	
     def GetWhitelist():
-        with open("whitelist.json") as json_data:
+        global filename
+        with open(filename) as json_data:
             d = json.load(json_data)
             return d
 
@@ -35,9 +37,23 @@ class Whitelist:
         return False
 
     @classmethod	
-    def isUserAllowed(name, probability, whitelist):
-        thresholdAllowed = 50
-        if user in whitelist and probability >= thresholdAllowed:
+    def isUserAllowed(name, whitelist):
+        if user in whitelist:
             return True
         else:
             return False
+
+    @classmethod	
+    def addNewUser(name, whitelist):
+        if name in whitelist:
+                print "Name already exists. Please enter another name"
+                return
+        whitelist[name] = {}
+        print "You have added " + name + " to the whitelist"
+        saveWhitelist(whitelist)
+
+    @classmethod	
+    def saveWhitelist(whitelist):
+        global filename
+        with open(filename, 'w') as json_file:
+            json.dump(whitelist, json_file)
