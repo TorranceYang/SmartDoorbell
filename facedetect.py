@@ -15,7 +15,6 @@ import json
 FACE_DETECTOR_PATH = "./haarcascade_frontalface_default.xml"
 
 fileLocation = 'images/testing/'
-
 #Camera init
 camera = PiCamera()
 camera.resolution = (640, 480)
@@ -46,33 +45,30 @@ def main():
 		imutils.resize(image, width=500)
 		gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-                #Get a copy of the current frame to send to the ML Model without transformations
+		#Get a copy of the current frame to send to the ML Model without transformations
 		predictionImage = image.copy()
                 
 		rects = detector.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30), flags=cv2.CASCADE_SCALE_IMAGE)
 
-                #TODO:
-                #Call the openCV face recognition method that takes in a 'bgr' image and rects as input
-                #So each frame, see if rects is empty, if it's not, call the method
-                if len(rects) > 0:
-                        #Call openCV face recognition method
-                        names = faceIdentifier.IdentifyFaces(image, rects)
-                        openDoor = False
-                        for name in names:
-                                openDoor = Whitelist.isUserAllowed(whiteList, name)
-                                if openDoor:
-                                        break
+		#TODO:
+		#Call the openCV face recognition method that takes in a 'bgr' image and rects as input
+		#So each frame, see if rects is empty, if it's not, call the method
+		if len(rects) > 0:
+			#Call openCV face recognition method
+			names = faceIdentifier.IdentifyFaces(image, rects)
+			openDoor = Whitelist.isUserAllowed(names, whiteList)
+			if openDoor:
+				break
 
-                        #ADD
-                        #Call to method to unlock the door
-                        
-                        print names
+			#ADD
+			#Call to method to unlock the door
+			print names
 
-                for (x, y, w, h) in rects:
-                        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                        #If the face is too small -> Person is too far away -> Don't process the image
-                        if w < 100:
-                                print 'Face is too small, please get closer!'
+		for (x, y, w, h) in rects:
+			cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+			#If the face is too small -> Person is too far away -> Don't process the image
+			if w < 100:
+				print 'Face is too small, please get closer!'
         
 		cv2.putText(image, "Status: {}".format(text), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
@@ -82,10 +78,10 @@ def main():
 		if key == ord("q"):
 			break
                 if key == ord("i"):
-                        Image_Processing.SaveImage(predictionImage, fileLocation)
+			Image_Processing.SaveImage(predictionImage, fileLocation)
 
-                #Clear the current image so a new one can be recorded
-                rawCapture.truncate(0)
+		#Clear the current image so a new one can be recorded
+		rawCapture.truncate(0)
 
 	cv2.destroyAllWindows()
 
