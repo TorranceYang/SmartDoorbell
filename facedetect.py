@@ -30,7 +30,7 @@ def main():
 
         #Load the whitelist
         whiteList = Whitelist.GetWhitelist()
-        
+
 	avg = None
 	detector = cv2.CascadeClassifier(FACE_DETECTOR_PATH)
 
@@ -38,7 +38,7 @@ def main():
 	for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
 		#Get the current frame as a 'still' image
 		image = frame.array
-		
+
 		text = "No Face Detected"
 
 		#Resize the image for added performance
@@ -47,7 +47,7 @@ def main():
 
 		#Get a copy of the current frame to send to the ML Model without transformations
 		predictionImage = image.copy()
-                
+
 		rects = detector.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30), flags=cv2.CASCADE_SCALE_IMAGE)
 
 		#TODO:
@@ -57,8 +57,14 @@ def main():
 			#Call openCV face recognition method
 			names = faceIdentifier.IdentifyFaces(image, rects)
 			openDoor = Whitelist.isUserAllowed(names, whiteList)
+
+			filePath = Image_Processing.SaveImage(predictionImage, fileLocation)
+
+			notifications = new Notifcations();
 			if openDoor:
-				break
+				notifications.SendRecognized(names, filePath)
+			else:
+				notifications.SendUnrecognized(filePath)
 
 			#ADD
 			#Call to method to unlock the door
@@ -69,11 +75,11 @@ def main():
 			#If the face is too small -> Person is too far away -> Don't process the image
 			if w < 100:
 				print 'Face is too small, please get closer!'
-        
+
 		cv2.putText(image, "Status: {}".format(text), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
 		cv2.imshow("Doorbell Feed", image)
-	
+
 		key = cv2.waitKey(1) & 0xFF
 		if key == ord("q"):
 			break

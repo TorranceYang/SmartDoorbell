@@ -11,3 +11,5 @@ class Image_Processing:
         outfile = '{0}_{1}.jpg'.format(fileLocation, datetime.now().strftime("%Y-%m-%d_%H:%M:%S"))
         cv2.imwrite(outfile, img)
         print('Image saved')
+
+        return ''.join(x for x in outfile.split("_")[1:])
