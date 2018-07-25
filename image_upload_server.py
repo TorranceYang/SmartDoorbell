@@ -3,7 +3,7 @@ from flask import request
 from flask import send_from_directory
 
 #Need to verify that this works
-UPLOAD_FOLDER = 'images/testing/'
+UPLOAD_FOLDER = '/mnt/c/users/t-toyang/pictures/'
 
 app = Flask(__name__)
 app.config

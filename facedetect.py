@@ -5,6 +5,7 @@ from Face_API_Image_Recognition import Face_API_Image_Recognition
 from Image_Processing import Image_Processing
 from face_identifier import FaceIdentifier
 from Whitelist import Whitelist
+from Notifications import Notifications
 import time
 import imutils
 import cv2
@@ -60,7 +61,7 @@ def main():
 
 			filePath = Image_Processing.SaveImage(predictionImage, fileLocation)
 
-			notifications = new Notifcations();
+			notifications = new Notifications();
 			if openDoor:
 				notifications.SendRecognized(names, filePath)
 			else:

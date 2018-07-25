@@ -1,6 +1,6 @@
-from Image_Processing import Image_Processing
+from twilio.rest import Client
 
-account_sid = 'AC93e7bbc2852f37e60a5dadaa85b48f7'
+account_sid = 'AC93e7bbc2852f37e60a5dadaa85b48f75'
 auth_token = '41949b0e6ef825cc9500f47f16eda0e0'
 
 client = Client(account_sid, auth_token)
@@ -9,13 +9,12 @@ class Notifications:
 
     @classmethod
     def SendRecognized(self, names, filePath):
-        introString = BuildNames(name) + "at the door!"
-
-        self.SendNotification(message, filePath)
+        introString = self.BuildNames(names) + "at the door!"
+	self.SendNotification(introString, filePath)
 
     @classmethod
     def SendUnrecognized(self, filePath):
-        SendNotification("There is an unrecognized face at the door!")
+        self.SendNotification("There is an unrecognized face at the door!", filePath)
 
     @classmethod
     def SendNotification(self, message, filePath):
@@ -30,15 +29,15 @@ class Notifications:
     def BuildNames(self, names):
         result = ""
 
-        if len(names == 1):
+        if len(names) == 1:
             result = "{0} is ".format(names[0])
-        elif len(names == 2):
+        elif len(names) == 2:
             result = "{0} and {1} are ".format(names[0], names[1])
         else:
             for i, name in enumerate(names):
-                if(i == length(names) - 1):
+                if(i == len(names) - 1):
                     result += "and {0} are ".format(names[i])
                 else:
-                    result += result + "{0}, ".format(names[i])
+                    result += "{0}, ".format(names[i])
 
         return result
