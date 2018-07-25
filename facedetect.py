@@ -85,4 +85,49 @@ def main():
 
 	cv2.destroyAllWindows()
 
+def openWhiteListOptions():
+	global whitelist
+	print "commands:"
+	print "view"
+	print "add <name>"
+	print "remove <name>"
+	print "exit"
+	#loop
+	while (True):
+		#wait for command
+		command = raw_input("Enter command: ")
+		#split command and parameter
+		cmdarray = command.split()
+		#view current users
+		if (cmdarray[0] == "view"):
+			userArray = getUsers()
+			print userArray
+		#add user
+		if (cmdarray[0] == "add"):
+			addUser(cmdarray[1])
+		#remove user
+		if (cmdarray[0] == "remove"):
+			removeUser(cmdarray[1])
+		#exit options
+		if (cmdarray[0] == "exit"):
+			break
+
+def getUsers():
+	userList = whitelist.keys()
+	return userList
+
+def addUser(userName):
+	#prompt user to put face in camera view
+	counter = 0
+	while (counter < 20):
+		#wait for any key press
+		raw_input('Press any key to take a picture ('+ 20-counter +' pictures remain)')
+		#take picture
+		#increment counter
+		counter += 1
+	Whitelist.addNewUser(username, whitelist)
+
+def removeUser(userName):
+	Whitelist.removeUser(username, whitelist)
+
 main()

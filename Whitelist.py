@@ -45,6 +45,15 @@ class Whitelist:
 		print "You have added " + name + " to the whitelist"
 		self.saveWhitelist(whitelist)
 
+    @classmethod
+    def removeUser(self, name, whitelist):
+        if name in whitelist:
+            del whitelist[name]
+            print "You have removed " + name + " from the whitelist"
+            self.saveWhitelist(whitelist)
+        else:
+            print name + " is not on the whitelist."
+
     @classmethod	
     def saveWhitelist(self, whitelist):
         with open(self.filename, 'w') as json_file:
