@@ -61,5 +61,5 @@ for (i, imagePath) in enumerate(imagePaths):
 print("[INFO] serializing encodings...")
 data = {"encodings": knownEncodings, "names": knownNames}
 f = open(args["encodings"], "wb")
-f.write(pickle.dumps(data))
+f.write(pickle.dumps(data, protocol=2))
 f.close()

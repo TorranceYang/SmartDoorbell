@@ -27,7 +27,7 @@ def main():
 	time.sleep(0.1)
 
         #Instantiate openCV face recognition
-        faceIdentifier = FaceIdentifier('./encoding.pickle')
+        faceIdentifier = FaceIdentifier('./encodings.pickle')
 
         #Load the whitelist
         whiteList = Whitelist.GetWhitelist()
@@ -56,7 +56,7 @@ def main():
                 #So each frame, see if rects is empty, if it's not, call the method
                 if len(rects) > 0:
                         #Call openCV face recognition method
-                        names = faceIdentifier.IdentifiyFaces(image, rects)
+                        names = faceIdentifier.IdentifyFaces(image, rects)
                         openDoor = False
                         for name in names:
                                 openDoor = Whitelist.isUserAllowed(whiteList, name)

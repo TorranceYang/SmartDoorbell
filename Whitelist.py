@@ -6,9 +6,8 @@ class Whitelist:
     filename = "whitelist.json"
 
     @classmethod	
-    def GetWhitelist():
-        global filename
-        with open(filename) as json_data:
+    def GetWhitelist(self):
+        with open(self.filename) as json_data:
             d = json.load(json_data)
             return d
 
@@ -38,7 +37,7 @@ class Whitelist:
 
     @classmethod	
     def isUserAllowed(name, whitelist):
-        if user in whitelist:
+        if name in whitelist:
             return True
         else:
             return False
@@ -54,6 +53,5 @@ class Whitelist:
 
     @classmethod	
     def saveWhitelist(whitelist):
-        global filename
-        with open(filename, 'w') as json_file:
+        with open(self.filename, 'w') as json_file:
             json.dump(whitelist, json_file)
