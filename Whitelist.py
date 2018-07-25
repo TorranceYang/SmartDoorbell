@@ -13,35 +13,24 @@ class Whitelist:
             return d
 
     @classmethod	
-    def isUserExpired(name, whitelist):
-        if name in whitelist:
-            currentTime = int(time.time())
-            expiry = whitelist[name]["Expiry"]
-
-            #get time difference and convert to minutes
-            timeDiff = (currentTime - whitelist[name]["TimeRegistered"]) / 60
-            if timeDiff > expiry:
-                return True
-        return False
-
-    @classmethod	
     def isUserWithinTimeFrame(name, whitelist):
         epoch = int(time.time())
         currentDay = time.strftime('%A', time.localtime(epoch))
         currentHour= datetime.datetime.now().hour  
-
         if name in whitelist and currentDay in whitelist[name]["Time"]:
             for timespan in whitelist[name]["Time"][currentDay]:
-                if currentHour > timespan[0] and currentHour <= timespan[1]:
+                if currentHour >= timespan[0] and currentHour <= timespan[1]:
                     return True
         return False
 
     @classmethod	
-    def isUserAllowed(name, whitelist):
-        if user in whitelist:
-            return True
-        else:
-            return False
+    def isUserAllowed(names, whitelist):
+        for name in names:
+            timeframe = isUserWithinTimeFrame(name, whitelist)
+            if name in whitelist and timeframe:
+                return True
+            else:
+                return False
 
     @classmethod	
     def addNewUser(name, whitelist):
